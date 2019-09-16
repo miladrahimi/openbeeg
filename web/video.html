@@ -75,7 +75,7 @@
                             url: proxyUrl,
                             type: 'GET',
                             data: {
-                                url: modifyLink(response[q]),
+                                url: modifyLink(response[q], 'TR'),
                                 follow: false,
                             }
                         }).done(function (response) {
@@ -87,14 +87,24 @@
                             link.attr('href', response['location']);
                             link.html('Direct ' + q);
                             link.appendTo('#links');
+                        });
 
-                            link = $('<a href="#" target="_blank"></a>');
+                        $.ajax({
+                            url: proxyUrl,
+                            type: 'GET',
+                            data: {
+                                url: modifyLink(response[q], 'US'),
+                                follow: false,
+                            }
+                        }).done(function (response) {
+                            if (links.html() === 'Fetching links...') {
+                                links.html('');
+                            }
+
+                            let link = $('<a href="#" target="_blank"></a>');
                             link.attr('href', proxyLink(response['location']));
                             link.html('Proxy ' + q);
                             link.appendTo('#links');
-
-                        }).fail(function () {
-                            // alert('Cannot load homepage.');
                         });
                     }
                 })
@@ -104,13 +114,13 @@
         }
 
         // Fetch video link
-        function modifyLink(link) {
-            return 'https:' + link.replace('{DATA_MARKERS}', 'data=pc_US__' + bundleVersion + '_');
+        function modifyLink(link, country) {
+            return 'https:' + link.replace('{DATA_MARKERS}', 'data=pc_' + country + '__' + bundleVersion + '_');
         }
 
         // Generate a link for video
         function proxyLink(link) {
-            return proxyUrl + '?url=' + link
+            return proxyUrl + '?referrer=' + baseUrl + '&url=' + link
         }
     });
 </script>
