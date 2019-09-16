@@ -71,41 +71,9 @@
 
                 $.each(['240p', '480p', '720p', '1080p', '2160p'], function (i, q) {
                     if (response[q]) {
-                        $.ajax({
-                            url: proxyUrl,
-                            type: 'GET',
-                            data: {
-                                url: modifyLink(response[q], 'TR'),
-                                follow: false,
-                            }
-                        }).done(function (response) {
-                            if (links.html() === 'Fetching links...') {
-                                links.html('');
-                            }
-
-                            let link = $('<a href="#" target="_blank"></a>');
-                            link.attr('href', response['location']);
-                            link.html('Direct ' + q);
-                            link.appendTo('#links');
-                        });
-
-                        $.ajax({
-                            url: proxyUrl,
-                            type: 'GET',
-                            data: {
-                                url: modifyLink(response[q], 'US'),
-                                follow: false,
-                            }
-                        }).done(function (response) {
-                            if (links.html() === 'Fetching links...') {
-                                links.html('');
-                            }
-
-                            let link = $('<a href="#" target="_blank"></a>');
-                            link.attr('href', proxyLink(response['location']));
-                            link.html('Proxy ' + q);
-                            link.appendTo('#links');
-                        });
+                        fetchLinks(response, q, 'TR');
+                        fetchLinks(response, q, 'US');
+                        fetchLinks(response, q, 'PK');
                     }
                 })
             }).fail(function () {
@@ -113,14 +81,31 @@
             });
         }
 
-        // Fetch video link
-        function modifyLink(link, country) {
+        // Generate video link
+        function generateLink(link, country) {
             return 'https:' + link.replace('{DATA_MARKERS}', 'data=pc_' + country + '__' + bundleVersion + '_');
         }
 
-        // Generate a link for video
-        function proxyLink(link) {
-            return proxyUrl + '?referrer=' + baseUrl + '&url=' + link
+        function fetchLinks(response, q, country) {
+            $.ajax({
+                url: proxyUrl,
+                type: 'GET',
+                data: {
+                    url: generateLink(response[q], country),
+                    follow: false,
+                }
+            }).done(function (response) {
+                let links = $('#links');
+
+                if (links.html() === 'Fetching links...') {
+                    links.html('');
+                }
+
+                let link = $('<a href="#" target="_blank"></a>');
+                link.attr('href', response['location']);
+                link.html(country + ' ' + q);
+                link.appendTo('#links');
+            });
         }
     });
 </script>
