@@ -54,16 +54,16 @@
             alert('Cannot load homepage.');
         });
 
-        // Fetch (homepage) videos
+        // Fetch videos
         function fetchVideos(version) {
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
                 data: {url: baseUrl + 'api/v6/' + version + '/index/main/0/pc'}
             }).done(function (response) {
-                bundleVersion = response['bundle_version'];
-
                 $('#wait').hide();
+
+                bundleVersion = response['bundle_version'];
 
                 $.each(response['videos'], function (i, video) {
                     let img = $('<img src="" alt="">');
@@ -88,7 +88,9 @@
 
         // Video click event: redirect to video permanent link
         $(document).on('click', '.video', function () {
-            window.location.href = 'video.html?id=' + $(this).attr('id');
+            window.location.href = 'video.html?' + $.param({
+                id: $(this).attr('id')
+            });
         });
     });
 </script>

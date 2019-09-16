@@ -29,8 +29,9 @@
 
 <body>
 <h1><a href="/">OpenBeeg!</a></h1>
-<h2>...</h2>
+<h2>Loading title...</h2>
 <p>Don't click on the links! Copy the link address you like and paste it in a new tab or window instead.</p>
+<p id="loading">Loading links...</p>
 <main id="links"></main>
 <a href="/">Back to home</a>
 
@@ -68,14 +69,12 @@
                 bundleVersion = response['bundle_version'];
                 $('h2').html(response['title']);
 
-                let links = $('#links');
-                links.html('Fetching links...');
-
-                $.each(['240p', '480p', '720p', '1080p', '2160p'], function (i, q) {
-                    if (response[q]) {
-                        fetchLinks(response, q, 'TR');
-                        fetchLinks(response, q, 'US');
-                        fetchLinks(response, q, 'PK');
+                let qualities = ['240p', '480p', '720p', '1080p', '2160p'];
+                $.each(qualities, function (i, quality) {
+                    if (response[quality]) {
+                        fetchLinks(response[quality], quality, 'TR');
+                        fetchLinks(response[quality], quality, 'US');
+                        fetchLinks(response[quality], quality, 'PK');
                     }
                 })
             }).fail(function () {
@@ -89,35 +88,25 @@
         }
 
         // Fetch final links for the video
-        function fetchLinks(response, q, country) {
+        function fetchLinks(link, quality, country) {
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
                 data: {
-                    url: generateLink(response[q], country),
+                    url: generateLink(link, country),
                     follow: false,
                 }
             }).done(function (response) {
-                let links = $('#links');
-
-                if (links.html() === 'Fetching links...') {
-                    links.html('');
-                }
-
                 let link = $('<a href="#" target="_blank"></a>');
                 link.attr('href', response['location']);
-                link.html(country + ' ' + q);
+                link.html(country + ' ' + quality);
                 link.appendTo('#links');
             }).fail(function () {
-                let links = $('#links');
-
-                if (links.html() === 'Fetching links...') {
-                    links.html('');
-                }
-
                 let link = $('<p></p>');
-                link.html(country + ' ' + q);
+                link.html(country + ' ' + quality);
                 link.appendTo('#links');
+            }).always(function () {
+                $('#loading').hide();
             });
         }
 
