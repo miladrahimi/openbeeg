@@ -24,6 +24,15 @@
             display: inline-block;
             margin: 15px;
         }
+
+        #links img {
+            width: 16px;
+            height: 16px;
+            position: relative;
+            top: 3px;
+            border-radius: 50%;
+            border: solid 1px blue;
+        }
     </style>
 </head>
 
@@ -99,21 +108,28 @@
             }).done(function (response) {
                 let link = $('<a href="#" target="_blank"></a>');
                 link.attr('href', response['location']);
-                link.html(country + ' ' + quality);
+                link.html(flag(country) + ' ' + quality);
                 link.appendTo('#links');
             }).fail(function () {
                 let link = $('<p></p>');
-                link.html(country + ' ' + quality);
+                link.html(flag(country) + ' ' + quality);
                 link.appendTo('#links');
             }).always(function () {
                 $('#loading').hide();
             });
         }
 
+        function flag(country) {
+            let url = 'https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.3.0/flags/1x1/country.svg';
+            let flag = url.replace('country', country.toLowerCase());
+
+            return  '<img src="' + flag + '" alt="' + country + '">';
+        }
+
         $(document).on('click', '#links a', function (e) {
             e.preventDefault();
             alert('Copy the link address and paste it in a new tab or window.')
-        })
+        });
     });
 </script>
 </body>
