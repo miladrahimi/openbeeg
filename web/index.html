@@ -63,6 +63,8 @@
             }).done(function (response) {
                 bundleVersion = response['bundle_version'];
 
+                $('#wait').hide();
+
                 $.each(response['videos'], function (i, video) {
                     let img = $('<img src="" alt="">');
                     img.attr('id', video['svid']);
