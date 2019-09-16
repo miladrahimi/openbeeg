@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.15.7-alpine
+    container_name: openbeeg_nginx
+    volumes:
+      - ./web:/usr/share/nginx/html
+      - ./docker/nginx/logs/:/var/log/nginx/
+    ports:
+      - ${APP_PORT:-0}:80
+    working_dir: /app
+    restart: always

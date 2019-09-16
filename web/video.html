@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>OpenBeeg!</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Lato', Georgia, Arial, sans-serif;
+        }
+
+        h1 a {
+            text-decoration: none;
+            color: dodgerblue;
+        }
+
+        #links {
+            padding: 0 5%;
+        }
+
+        #links a {
+            display: inline-block;
+            margin: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<h1><a href="/">OpenBeeg!</a></h1>
+<h2>...</h2>
+<main id="links"></main>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        let baseUrl = 'https://beeg.com/';
+        let proxyUrl = 'https://singlefetch.herokuapp.com/';
+        let videoId = new URLSearchParams(window.location.search).get('id');
+        let bundleVersion = 0;
+
+        if (!videoId) {
+            window.location.href = 'index.html';
+        }
+
+        // Load the video page
+        $.ajax({
+            url: proxyUrl,
+            type: 'GET',
+            data: {url: baseUrl + videoId}
+        }).done(function (response) {
+            let version = response.match(/beeg_version = ([\d]+);/)[1];
+            fetchVideo(version);
+        }).fail(function () {
+            alert('Cannot load homepage.');
+        });
+
+        // Fetch the video information
+        function fetchVideo(version) {
+            $.ajax({
+                url: proxyUrl,
+                type: 'GET',
+                data: {url: 'https://beeg.com/api/v6/' + version + '/video/' + videoId + '?v=2'}
+            }).done(function (response) {
+                bundleVersion = response['bundle_version'];
+                $('h2').html(response['title']);
+
+                let links = $('#links');
+                links.html('Fetching links...');
+
+                $.each(['240p', '480p', '720p', '1080p', '2160p'], function (i, q) {
+                    if (response[q]) {
+                        $.ajax({
+                            url: proxyUrl,
+                            type: 'GET',
+                            data: {
+                                url: modifyLink(response[q]),
+                                follow: false,
+                            }
+                        }).done(function (response) {
+                            if (links.html() === 'Fetching links...') {
+                                links.html('');
+                            }
+
+                            let link = $('<a href="#" target="_blank"></a>');
+                            link.attr('href', response['location']);
+                            link.html('Direct ' + q);
+                            link.appendTo('#links');
+
+                            link = $('<a href="#" target="_blank"></a>');
+                            link.attr('href', proxyLink(response['location']));
+                            link.html('Proxy ' + q);
+                            link.appendTo('#links');
+
+                        }).fail(function () {
+                            // alert('Cannot load homepage.');
+                        });
+                    }
+                })
+            }).fail(function () {
+                alert('Cannot load homepage.');
+            });
+        }
+
+        // Fetch video link
+        function modifyLink(link) {
+            return 'https:' + link.replace('{DATA_MARKERS}', 'data=pc_US__' + bundleVersion + '_');
+        }
+
+        // Generate a link for video
+        function proxyLink(link) {
+            return proxyUrl + '?url=' + link
+        }
+    });
+</script>
+</body>
+</html>

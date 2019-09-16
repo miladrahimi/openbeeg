@@ -1,0 +1,15 @@
+{
+  "name": "miladrahimi/openbeeg",
+  "description": "OpenBeeg!",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Milad Rahimi",
+      "email": "info@miladrahimi.com"
+    }
+  ],
+  "require-dev": {
+    "heroku/heroku-buildpack-php": "*"
+  }
+}
