@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OpenBeeg!</title>
+    <title>OpenBeeg! Video</title>
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
     <style>
         body {
@@ -11,7 +11,7 @@
             font-family: 'Lato', Georgia, Arial, sans-serif;
         }
 
-        h1 a {
+        a {
             text-decoration: none;
             color: dodgerblue;
         }
@@ -124,7 +124,7 @@
             let url = 'https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.3.0/flags/1x1/country.svg';
             let flag = url.replace('country', country.toLowerCase());
 
-            return  '<img src="' + flag + '" alt="' + country + '">';
+            return '<img src="' + flag + '" alt="' + country + '">';
         }
 
         $(document).on('click', '#links a', function (e) {

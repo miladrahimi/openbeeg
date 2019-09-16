@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OpenBeeg! Home</title>
+    <title>OpenBeeg! Tag</title>
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
     <style>
         body {
@@ -36,8 +36,7 @@
 </head>
 
 <body>
-<h1>OpenBeeg!</h1>
-<h2><a href="tags.html">Tags</a></h2>
+<h1><a href="/">OpenBeeg!</a></h1>
 <main></main>
 <p id="wait">Please wait...</p>
 
@@ -47,6 +46,12 @@
         let baseUrl = 'https://beeg.com/';
         let proxyUrl = 'https://singlefetch.herokuapp.com/';
         let bundleVersion = 0;
+
+        let tag = new URLSearchParams(window.location.search).get('tag');
+        tag = tag.replace(' ', '%20');
+        if (!tag) {
+            window.location.href = 'tags.html';
+        }
 
         // Load the homepage
         $.ajax({
@@ -65,7 +70,7 @@
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
-                data: {url: baseUrl + 'api/v6/' + version + '/index/main/0/pc'}
+                data: {url: baseUrl + 'api/v6/' + version + '/index/tag/0/pc?tag=' + tag}
             }).done(function (response) {
                 $('#wait').hide();
 

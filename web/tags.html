@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OpenBeeg! Home</title>
+    <title>OpenBeeg! Tags</title>
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
     <style>
         body {
@@ -22,22 +22,22 @@
 
         main {
             overflow: auto;
-            line-height: 0;
         }
 
-        img {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
-            cursor: pointer;
-            position: relative;
+        main a {
+            display: inline-block;
+            margin: 5px;
+            padding: 3px;
+            background: rgb(231, 231, 231);
+            text-decoration: none;
+            border-radius: 4px;
         }
     </style>
 </head>
 
 <body>
-<h1>OpenBeeg!</h1>
-<h2><a href="tags.html">Tags</a></h2>
+<h1><a href="/">OpenBeeg!</a></h1>
+<h1>Tags</h1>
 <main></main>
 <p id="wait">Please wait...</p>
 
@@ -46,7 +46,6 @@
     $(document).ready(function () {
         let baseUrl = 'https://beeg.com/';
         let proxyUrl = 'https://singlefetch.herokuapp.com/';
-        let bundleVersion = 0;
 
         // Load the homepage
         $.ajax({
@@ -69,35 +68,20 @@
             }).done(function (response) {
                 $('#wait').hide();
 
-                bundleVersion = response['bundle_version'];
+                $.each(response['tags'], function (i, t) {
+                    let tag = '<a href="#">tag (videos)</a>';
+                    tag = tag.replace('videos', t['videos']);
+                    tag = tag.replace('tag', t['tag']);
+                    tag = tag.replace('#', 'tag.html?tag=' + t['tag']);
 
-                $.each(response['videos'], function (i, video) {
-                    let img = $('<img src="" alt="">');
-                    img.attr('id', video['svid']);
-                    img.attr('alt', video['title']);
-                    img.attr('title', video['title']);
-                    img.attr('src', thumbnail(video['thumbs']));
-                    img.attr('class', 'video');
-                    img.appendTo('main');
+                    console.log(tag);
+
+                    $('main').append(tag);
                 })
             }).fail(function () {
-                alert('Cannot fetch videos.');
+                alert('Cannot fetch tags.');
             });
         }
-
-        // Generate thumbnail link through the proxy
-        function thumbnail(thumbnails) {
-            return proxyUrl + '?' + $.param({
-                url: 'https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumbnails[0].image
-            });
-        }
-
-        // Video click event: redirect to video permanent link
-        $(document).on('click', '.video', function () {
-            window.location.href = 'video.html?' + $.param({
-                id: $(this).attr('id')
-            });
-        });
     });
 </script>
 </body>
