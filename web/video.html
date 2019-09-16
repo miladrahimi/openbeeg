@@ -55,7 +55,7 @@
             let version = response.match(/beeg_version = ([\d]+);/)[1];
             fetchVideo(version);
         }).fail(function () {
-            alert('Cannot load homepage.');
+            alert('Cannot load the video page.');
         });
 
         // Fetch the video information
@@ -79,7 +79,7 @@
                     }
                 })
             }).fail(function () {
-                alert('Cannot load homepage.');
+                alert('Cannot load the video information.');
             });
         }
 
@@ -88,6 +88,7 @@
             return 'https:' + link.replace('{DATA_MARKERS}', 'data=pc_' + country + '__' + bundleVersion + '_');
         }
 
+        // Fetch final links for the video
         function fetchLinks(response, q, country) {
             $.ajax({
                 url: proxyUrl,
@@ -107,8 +108,23 @@
                 link.attr('href', response['location']);
                 link.html(country + ' ' + q);
                 link.appendTo('#links');
+            }).fail(function () {
+                let links = $('#links');
+
+                if (links.html() === 'Fetching links...') {
+                    links.html('');
+                }
+
+                let link = $('<p></p>');
+                link.html(country + ' ' + q);
+                link.appendTo('#links');
             });
         }
+
+        $(document).on('click', '#links a', function (e) {
+            e.preventDefault();
+            alert('Copy the link address and paste it in a new tab or window.')
+        })
     });
 </script>
 </body>
