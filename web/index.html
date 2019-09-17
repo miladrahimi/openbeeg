@@ -32,6 +32,15 @@
             cursor: pointer;
             position: relative;
         }
+
+        #pages a {
+            display: inline-block;
+            margin: 3px;
+        }
+
+        #pages .current {
+            color: black;
+        }
     </style>
 </head>
 
@@ -39,6 +48,7 @@
 <h1>OpenBeeg!</h1>
 <h2><a href="tags.html">Tags</a></h2>
 <main></main>
+<section id="pages"></section>
 <p id="wait">Please wait...</p>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -46,7 +56,9 @@
     $(document).ready(function () {
         let baseUrl = 'https://beeg.com/';
         let proxyUrl = 'https://singlefetch.herokuapp.com/';
+        let version = 0;
         let bundleVersion = 0;
+        let page = 0;
 
         // Load the homepage
         $.ajax({
@@ -54,18 +66,18 @@
             type: 'GET',
             data: {url: baseUrl}
         }).done(function (response) {
-            let version = response.match(/beeg_version = ([\d]+);/)[1];
-            fetchVideos(version);
+            version = response.match(/beeg_version = ([\d]+);/)[1];
+            fetchVideos(version, page);
         }).fail(function () {
             alert('Cannot load homepage.');
         });
 
         // Fetch videos
-        function fetchVideos(version) {
+        function fetchVideos(version, page) {
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
-                data: {url: baseUrl + 'api/v6/' + version + '/index/main/0/pc'}
+                data: {url: baseUrl + 'api/v6/' + version + '/index/main/' + page + '/pc'}
             }).done(function (response) {
                 $('#wait').hide();
 
@@ -79,7 +91,14 @@
                     img.attr('src', thumbnail(video['thumbs']));
                     img.attr('class', 'video');
                     img.appendTo('main');
-                })
+                });
+
+                for (let i = 0; i < response['pages']; i++) {
+                    let link = $('<a href="#"></a>');
+                    link.attr('class', (i === page) ? 'current' : '');
+                    link.html(i + 1);
+                    link.appendTo('#pages')
+                }
             }).fail(function () {
                 alert('Cannot fetch videos.');
             });
@@ -97,6 +116,20 @@
             window.location.href = 'video.html?' + $.param({
                 id: $(this).attr('id')
             });
+        });
+
+        // Page click event
+        $(document).on('click', '#pages a', function (e) {
+            e.preventDefault();
+
+            $('#pages a').removeClass('current');
+            $(this).addClass('current');
+
+            $('main').html('');
+            $('#wait').show();
+
+            page = parseInt($(this).html()) - 1;
+            fetchVideos(version, page);
         });
     });
 </script>
