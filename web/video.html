@@ -104,7 +104,7 @@
                 type: 'GET',
                 data: {
                     url: generateLink(link, country),
-                    follow: false,
+                    redirection: 'stop',
                 }
             }).done(function (response) {
                 let link = $('<a href="#" target="_blank"></a>');
