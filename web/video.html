@@ -79,12 +79,17 @@
                 bundleVersion = response['bundle_version'];
                 $('h2').html(response['title']);
 
+                let range = '';
+                if (response['start'] && response['end']) {
+                    range = '_' + response['start'] + '_' + response['end'];
+                }
+
                 let qualities = ['240p', '480p', '720p', '1080p', '2160p'];
                 $.each(qualities, function (i, quality) {
                     if (response[quality]) {
-                        fetchLinks(response[quality], quality, 'TR');
-                        fetchLinks(response[quality], quality, 'US');
-                        fetchLinks(response[quality], quality, 'PK');
+                        fetchLinks(response[quality], quality, range, 'TR');
+                        fetchLinks(response[quality], quality, range, 'US');
+                        fetchLinks(response[quality], quality, range, 'PK');
                     }
                 })
             }).fail(function () {
@@ -93,17 +98,18 @@
         }
 
         // Generate video link
-        function generateLink(link, country) {
-            return 'https:' + link.replace('{DATA_MARKERS}', 'data=pc_' + country + '__' + bundleVersion + '_');
+        function generateLink(link, range, country) {
+            let markers = 'data=pc_' + country + '__' + bundleVersion + '_';
+            return 'https:' + link.replace('{DATA_MARKERS}', markers) + range;
         }
 
         // Fetch final links for the video
-        function fetchLinks(link, quality, country) {
+        function fetchLinks(link, quality, range, country) {
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
                 data: {
-                    url: generateLink(link, country),
+                    url: generateLink(link, range, country),
                     redirection: 'stop',
                 }
             }).done(function (response) {

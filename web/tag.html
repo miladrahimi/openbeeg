@@ -16,7 +16,7 @@
             color: dodgerblue;
         }
 
-        #wait {
+        #loading {
             margin: 15px 0;
         }
 
@@ -72,7 +72,7 @@
                 type: 'GET',
                 data: {url: baseUrl + 'api/v6/' + version + '/index/tag/0/pc?tag=' + tag}
             }).done(function (response) {
-                $('#wait').hide();
+                $('#loading').hide();
 
                 bundleVersion = response['bundle_version'];
 

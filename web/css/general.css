@@ -1,0 +1,27 @@
+body {
+    text-align: center;
+    font-family: 'Courier New', Georgia, Arial, sans-serif;
+}
+
+header h1 {
+    margin: 0 0 15px 0;
+}
+
+header nav {
+    margin-bottom: 15px;
+}
+
+header nav a {
+    text-decoration: none;
+    color: dodgerblue;
+    font-weight: bold;
+}
+
+header nav a.active {
+    color: black;
+}
+
+#loading {
+    margin: 15px 0;
+    font-weight: bold;
+}

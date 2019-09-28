@@ -16,7 +16,7 @@
             color: dodgerblue;
         }
 
-        #wait {
+        #loading {
             margin: 15px 0;
         }
 
@@ -66,7 +66,7 @@
                 type: 'GET',
                 data: {url: baseUrl + 'api/v6/' + version + '/index/main/0/pc'}
             }).done(function (response) {
-                $('#wait').hide();
+                $('#loading').hide();
 
                 $.each(response['tags'], function (i, t) {
                     let tag = '<a href="#">tag (videos)</a>';
