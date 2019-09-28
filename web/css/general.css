@@ -3,6 +3,11 @@ body {
     font-family: 'Courier New', Georgia, Arial, sans-serif;
 }
 
+a {
+    text-decoration: none;
+    color: dodgerblue;
+}
+
 header h1 {
     margin: 0 0 15px 0;
 }
@@ -12,8 +17,6 @@ header nav {
 }
 
 header nav a {
-    text-decoration: none;
-    color: dodgerblue;
     font-weight: bold;
 }
 

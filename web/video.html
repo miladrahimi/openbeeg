@@ -3,19 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OpenBeeg! Video</title>
-    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+    <title>OpenBeeg > Video</title>
+    <link rel="stylesheet" href="css/general.css">
     <style>
-        body {
-            text-align: center;
-            font-family: 'Lato', Georgia, Arial, sans-serif;
-        }
-
-        a {
-            text-decoration: none;
-            color: dodgerblue;
-        }
-
         #links {
             padding: 0 5%;
         }
@@ -33,19 +23,38 @@
             border-radius: 50%;
             border: solid 1px blue;
         }
+
+        #player {
+            margin: 15px auto;
+        }
+
+        #player video {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 15px auto;
+        }
     </style>
 </head>
 
 <body>
-<h1><a href="/">OpenBeeg!</a></h1>
+<header>
+    <h1><a href="/">&#128166; OpenBeeg</a></h1>
+</header>
+
 <h2>Loading title...</h2>
-<p>Don't click on the links! Copy the link address you like and paste it in a new tab or window instead.</p>
-<p id="loading">Loading links...</p>
-<main id="links"></main>
-<p><a href="/">Back to home</a></p>
-<p>&copy; CopyFucked by "Milad 666 have 3 of 6", No any fucking right is reserved.</p>
+
+<p id="loading">LOADING...</p>
+
+<section id="links"></section>
+
+<section id="player"></section>
+
+<p><a href="/"><strong>Back to home</strong></a></p>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="js/general.js"></script>
 <script>
     $(document).ready(function () {
         let baseUrl = 'https://beeg.com/';
@@ -84,6 +93,8 @@
                     range = '_' + response['start'] + '_' + response['end'];
                 }
 
+                $('#player').append('<select id="videos" title="Video"></select>');
+
                 let qualities = ['240p', '480p', '720p', '1080p', '2160p'];
                 $.each(qualities, function (i, quality) {
                     if (response[quality]) {
@@ -91,7 +102,7 @@
                         fetchLinks(response[quality], quality, range, 'US');
                         fetchLinks(response[quality], quality, range, 'PK');
                     }
-                })
+                });
             }).fail(function () {
                 alert('Cannot load the video information.');
             });
@@ -111,12 +122,20 @@
                 data: {
                     url: generateLink(link, range, country),
                     redirection: 'stop',
+                    h_referer: baseUrl,
                 }
             }).done(function (response) {
                 let link = $('<a href="#" target="_blank"></a>');
                 link.attr('href', response['location']);
                 link.html(flag(country) + ' ' + quality);
                 link.appendTo('#links');
+
+                let option = $('<option></option>');
+                option.attr('value', proxify(response['location']));
+                option.html(country + ' ' + quality);
+                option.appendTo('#videos');
+
+                play(undefined);
             }).fail(function () {
                 let link = $('<p></p>');
                 link.html(flag(country) + ' ' + quality);
@@ -132,6 +151,25 @@
 
             return '<img src="' + flag + '" alt="' + country + '">';
         }
+
+        function play(link) {
+            if (link === undefined) {
+                link = $('#videos').val();
+            }
+
+            if ($('video').length === 0) {
+                let video = $('<video></video>');
+                video.attr('src', link);
+                video.attr('preload', 'metadata');
+                video.attr('controls', true);
+                video.attr('playsinline', true);
+                video.appendTo('#player');
+            }
+        }
+
+        $(document).on('change', '#videos', function () {
+            $('video').attr('src', $(this).val());
+        });
 
         $(document).on('click', '#links a', function (e) {
             e.preventDefault();
