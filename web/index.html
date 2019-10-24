@@ -115,7 +115,7 @@
         function api(page) {
             let tag = new URLSearchParams(window.location.search).get('tag');
             if (tag) {
-                $('nav').append(`| <strong>Tag: ${tag}</strong>`);
+                $('nav').append(`| <strong>(${tag})</strong>`);
                 tag = tag.replace(' ', '%20');
                 return baseUrl + 'api/v6/' + version + '/index/tag/' + page + '/pc?tag=' + tag
             }
