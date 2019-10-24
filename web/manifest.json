@@ -1,0 +1,16 @@
+{
+  "name": "OpenBeeg!",
+  "short_name": "OpenBeeg!",
+  "start_url": "index.html?utm_source=homescreen",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./favicon.ico",
+      "sizes": "16x16",
+      "type": "image/x-icon"
+    },
+  ],
+  "theme_color": "#fff",
+  "background_color": "#fff",
+  "display": "standalone"
+}
