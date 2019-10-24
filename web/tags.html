@@ -60,7 +60,7 @@
                 $('#loading').hide();
 
                 $.each(response['tags'], function (i, t) {
-                    let tag = '<a href="#">tag (videos)</a>';
+                    let tag = '<a href="#">tag&nbsp(videos)</a>';
                     tag = tag.replace('videos', t['videos']);
                     tag = tag.replace('tag', t['tag']);
                     tag = tag.replace('#', 'index.html?tag=' + t['tag']);
