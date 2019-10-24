@@ -115,13 +115,13 @@
         function api(page) {
             let tag = new URLSearchParams(window.location.search).get('tag');
             if (tag) {
-                $('nav').append(`| <strong>(${tag})</strong>`);
+                $('nav').append(`|&nbsp<strong>(${tag})</strong>`);
                 tag = tag.replace(' ', '%20');
-                return baseUrl + 'api/v6/' + version + '/index/tag/' + page + '/pc?tag=' + tag
+                return `${baseUrl}api/v6/${version}/index/tag/${page}/pc?tag=${tag}`
             }
 
             $('nav a[href="index.html"]').addClass("active");
-            return baseUrl + 'api/v6/' + version + '/index/main/' + page + '/pc'
+            return `${baseUrl}api/v6/${version}/index/main/${page}/pc`
         }
 
         // Video click event: redirect to video permanent link

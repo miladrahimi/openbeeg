@@ -59,8 +59,6 @@
 <script src="js/general.js"></script>
 <script>
     $(document).ready(function () {
-        let baseUrl = 'https://beeg.com/';
-        let proxyUrl = 'https://singlefetch.herokuapp.com/';
         let videoId = new URLSearchParams(window.location.search).get('id');
         let bundleVersion = 0;
 
@@ -85,7 +83,7 @@
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
-                data: {url: 'https://beeg.com/api/v6/' + version + '/video/' + videoId + '?v=2'}
+                data: {url: `https://beeg.com/api/v6/${version}/video/${videoId}?v=2`}
             }).done(function (response) {
                 bundleVersion = response['bundle_version'];
                 $('h2').html(response['title']);
@@ -112,7 +110,7 @@
 
         // Generate video link
         function generateLink(link, range, country) {
-            let markers = 'data=pc_' + country + '__' + bundleVersion + '_';
+            let markers = `data=pc_${country}__${bundleVersion}_`;
             return 'https:' + link.replace('{DATA_MARKERS}', markers) + range;
         }
 

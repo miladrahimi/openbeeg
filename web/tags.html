@@ -55,7 +55,7 @@
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
-                data: {url: baseUrl + 'api/v6/' + version + '/index/main/0/pc'}
+                data: {url: `${baseUrl}api/v6/${version}/index/main/0/pc`}
             }).done(function (response) {
                 $('#loading').hide();
 
