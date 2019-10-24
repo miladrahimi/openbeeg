@@ -4,22 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>OpenBeeg! Tags</title>
-    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/general.css">
     <style>
-        body {
-            text-align: center;
-            font-family: 'Lato', Georgia, Arial, sans-serif;
-        }
-
-        a {
-            text-decoration: none;
-            color: dodgerblue;
-        }
-
-        #loading {
-            margin: 15px 0;
-        }
-
         main {
             overflow: auto;
         }
@@ -36,17 +22,22 @@
 </head>
 
 <body>
-<h1><a href="/">OpenBeeg!</a></h1>
-<h1>Tags</h1>
+<header>
+    <h1><a href="/">&#128166; OpenBeeg!</a></h1>
+    <nav>
+        <a href="index.html">Home</a> |
+        <a href="tags.html" class="active">Tags</a>
+    </nav>
+</header>
+
 <main></main>
-<p id="wait">Please wait...</p>
+
+<p id="loading">LOADING...</p>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="js/general.js"></script>
 <script>
     $(document).ready(function () {
-        let baseUrl = 'https://beeg.com/';
-        let proxyUrl = 'https://singlefetch.herokuapp.com/';
-
         // Load the homepage
         $.ajax({
             url: proxyUrl,
@@ -54,13 +45,13 @@
             data: {url: baseUrl}
         }).done(function (response) {
             let version = response.match(/beeg_version = ([\d]+);/)[1];
-            fetchVideos(version);
+            fetchTags(version);
         }).fail(function () {
             alert('Cannot load homepage.');
         });
 
-        // Fetch videos
-        function fetchVideos(version) {
+        // Fetch tags
+        function fetchTags(version) {
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
@@ -72,14 +63,12 @@
                     let tag = '<a href="#">tag (videos)</a>';
                     tag = tag.replace('videos', t['videos']);
                     tag = tag.replace('tag', t['tag']);
-                    tag = tag.replace('#', 'tag.html?tag=' + t['tag']);
-
-                    console.log(tag);
+                    tag = tag.replace('#', 'index.html?tag=' + t['tag']);
 
                     $('main').append(tag);
                 })
             }).fail(function () {
-                alert('Cannot fetch tags.');
+                alert('Cannot load tags.');
             });
         }
     });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OpenBeeg > Home</title>
+    <title>OpenBeeg!</title>
     <link rel="stylesheet" href="css/general.css">
     <style>
         main {
@@ -37,14 +37,10 @@
 
 <body>
 <header>
-    <h1>&#128166; OpenBeeg</h1>
-
+    <h1><a href="/">&#128166; OpenBeeg!</a></h1>
     <nav>
-        <a href="index.html" class="active">Home</a> |
-        <a href="#">Search</a> |
-        <a href="tags.html">Tags</a> |
-        <a href="#">People</a> |
-        <a href="#">Channels</a>
+        <a href="index.html">Home</a> |
+        <a href="tags.html">Tags</a>
     </nav>
 </header>
 
@@ -78,7 +74,7 @@
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
-                data: {url: baseUrl + 'api/v6/' + version + '/index/main/' + page + '/pc'}
+                data: {url: link(page)}
             }).done(function (response) {
                 bundleVersion = response['bundle_version'];
 
@@ -93,7 +89,7 @@
 
                     setTimeout(function () {
                         img.attr('src', thumbnail(video['thumbs']));
-                    })
+                    });
                 });
 
                 $('#pages').html('');
@@ -113,6 +109,18 @@
         // Generate thumbnail link through the proxy
         function thumbnail(thumbnails) {
             return proxify('https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumbnails[0].image);
+        }
+
+        function link(page) {
+            let tag = new URLSearchParams(window.location.search).get('tag');
+            if (tag) {
+                $('nav').append(`| <strong>Tag: ${tag}</strong>`);
+                tag = tag.replace(' ', '%20');
+                return baseUrl + 'api/v6/' + version + '/index/tag/' + page + '/pc?tag=' + tag
+            }
+
+            $('nav a[href="index.html"]').addClass("active");
+            return baseUrl + 'api/v6/' + version + '/index/main/' + page + '/pc'
         }
 
         // Video click event: redirect to video permanent link
