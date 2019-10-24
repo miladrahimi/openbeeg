@@ -8,10 +8,4 @@ $(document).ready(function () {
             h_referer: baseUrl,
         });
     };
-
-    $('nav a').click(function () {
-        if ($(this).attr('href') === '#') {
-            alert('Cumming soon!');
-        }
-    });
 });
