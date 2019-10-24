@@ -111,7 +111,11 @@
 
         // Generate thumbnail link through the proxy
         function thumbnail(thumbnails) {
-            return proxify('https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumbnails[0].image);
+            if (thumbnails && thumbnails[0]) {
+                return proxify('https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumbnails[0].image);
+            }
+
+            return 'img/placeholder.jpg';
         }
 
         // Generate api link based on inputs
