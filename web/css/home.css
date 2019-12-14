@@ -1,0 +1,31 @@
+main {
+    overflow: auto;
+    line-height: 0;
+}
+
+.box {
+    display: inline-block;
+    position: relative;
+}
+
+.box img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    cursor: pointer;
+    position: relative;
+}
+
+#pages {
+    margin-top: 15px;
+}
+
+#pages a {
+    display: inline-block;
+    margin: 3px;
+    font-weight: bold;
+}
+
+#pages .current {
+    color: black;
+}

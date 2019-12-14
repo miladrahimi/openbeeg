@@ -5,51 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="referrer" content="no-referrer">
-    <title>OpenBeeg > Video</title>
-    <link rel="stylesheet" href="css/general.css">
+    <title>OpenBeeg!</title>
+    <link rel="stylesheet" href="css/general.css?md5=e65d2127be239653807391c7cf0cc1c8">
+    <link rel="stylesheet" href="css/video.css">
     <link rel="apple-touch-icon" sizes="160x160" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
-    <style>
-        #links {
-            padding: 0 5%;
-        }
-
-        #links a {
-            display: inline-block;
-            margin: 15px;
-        }
-
-        #links img {
-            width: 16px;
-            height: 16px;
-            position: relative;
-            top: 3px;
-            border-radius: 50%;
-            border: solid 1px blue;
-        }
-
-        #player {
-            margin: 15px auto;
-        }
-
-        #player video {
-            width: auto;
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 15px auto;
-        }
-    </style>
 </head>
 
 <body>
-<header>
-    <h1><a href="/">&#128166; OpenBeeg!</a></h1>
-    <nav>
-        <a href="index.html">Home</a> |
-        <a href="tags.html">Tags</a>
-    </nav>
-</header>
+
+<h1><a href="/">&#128166;</a></h1>
 
 <h2>Loading title...</h2>
 
@@ -59,9 +24,10 @@
 
 <section id="player"></section>
 
-<section><p>CopyFuck &copy; by M.R. Offered by E.H.T.</p></section>
+<section><p>Copyfuck &copy; by M.R. Offered by E.H.T.</p></section>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<!-- Scripts -->
+<script src="vendor/jquery-3.3.1.min.js"></script>
 <script src="js/general.js"></script>
 <script>
     $(document).ready(function () {
@@ -92,7 +58,7 @@
                 data: {url: `https://beeg.com/api/v6/${version}/video/${videoId}?v=2`}
             }).done(function (response) {
                 bundleVersion = response['bundle_version'];
-                $('h2').html(response['title']);
+                $('h2').html(response['title'] ? response['title'] : response['ps_name']);
 
                 let range = '';
                 if (response['start'] && response['end']) {

@@ -8,20 +8,18 @@ a {
     color: dodgerblue;
 }
 
-header h1 {
-    margin: 0 0 15px 0;
+h1 a {
+    margin: 15px;
+    padding: 15px 20px;
+    border: solid 1px dodgerblue;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    transition: .3s ease all;
 }
 
-header nav {
-    margin-bottom: 15px;
-}
-
-header nav a {
-    font-weight: bold;
-}
-
-header nav a.active {
-    color: black;
+h1 a:hover, h1 a:focus {
+    background: dodgerblue;
 }
 
 #loading {

@@ -6,66 +6,30 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="referrer" content="no-referrer">
     <title>OpenBeeg!</title>
-    <link rel="stylesheet" href="css/general.css?v=2">
+    <link rel="stylesheet" href="css/general.css?md5=e65d2127be239653807391c7cf0cc1c8">
+    <link rel="stylesheet" href="css/home.css">
     <link rel="apple-touch-icon" sizes="160x160" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
-    <style>
-        main {
-            overflow: auto;
-            line-height: 0;
-        }
-
-        .box {
-            display: inline-block;
-            position: relative;
-        }
-
-        .box img {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
-            cursor: pointer;
-            position: relative;
-        }
-
-        #pages {
-            margin-top: 15px;
-        }
-
-        #pages a {
-            display: inline-block;
-            margin: 3px;
-            font-weight: bold;
-        }
-
-        #pages .current {
-            color: black;
-        }
-    </style>
 </head>
 
 <body>
-<header>
-    <h1><a href="/">&#128166; OpenBeeg!</a></h1>
-    <nav>
-        <a href="index.html">Home</a> |
-        <a href="tags.html">Tags</a>
-    </nav>
-</header>
+
+<h1><a href="index.html">&#128166;</a></h1>
 
 <main></main>
 <section id="pages"></section>
-
 <p id="loading">LOADING...</p>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<!-- Scripts -->
+<script src="vendor/jquery-3.3.1.min.js"></script>
 <script src="js/general.js"></script>
 <script>
     $(document).ready(function () {
-        let version = 0;
+        let mainVersion = 0;
         let bundleVersion = 0;
         let page = 0;
-        let thumbs = [];
+        let thumbs = {};
+        let thumbIntervals = {};
 
         // Load the homepage
         $.ajax({
@@ -73,30 +37,34 @@
             type: 'GET',
             data: {url: baseUrl}
         }).done(function (response) {
-            version = response.match(/beeg_version = ([\d]+);/)[1];
-            fetchVideos(version, page);
+            mainVersion = response.match(/beeg_version = ([\d]+);/)[1];
+            fetchVideos();
         }).fail(function () {
-            alert('Cannot load homepage.');
+            alert('Cannot load the homepage.');
         });
 
-        // Fetch videos
-        function fetchVideos(version, page) {
+        function fetchVideos() {
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
-                data: {url: api(page)}
+                data: {
+                    url: `${baseUrl}api/v6/${mainVersion}/index/main/${page}/pc`,
+                }
             }).done(function (response) {
                 bundleVersion = response['bundle_version'];
 
                 $.each(response['videos'], function (i, video) {
-                    let container = $('<div class="box"></div>');
+                    let container = $('<a class="box" href="#"></a>');
+                    container.attr('href', 'video.html?id=' + video['svid']);
+
                     let img = $('<img src="" alt="">');
                     img.attr('id', video['svid']);
-                    img.attr('alt', video['title']);
-                    img.attr('title', video['title']);
+                    img.attr('alt', 'VIDEO');
+                    img.attr('title', video['title'] ? video['title'] : video['ps_name']);
                     img.attr('src', 'img/placeholder.jpg');
                     img.attr('class', 'video');
                     img.appendTo(container);
+
                     container.appendTo('main');
 
                     setTimeout(function () {
@@ -120,11 +88,12 @@
         }
 
         // Generate thumbnail link through the proxy
-        function thumbnails(thumbnails) {
-            if (thumbnails) {
+        function thumbnails(rawThumbs) {
+            if (rawThumbs) {
                 let result = [];
-                thumbnails.forEach(function (thumbnail) {
-                    result.push('https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumbnail.image)
+
+                rawThumbs.forEach(function (thumbnail) {
+                    result.push(proxify('https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumbnail.image));
                 });
 
                 return result;
@@ -132,26 +101,6 @@
 
             return ['img/placeholder.jpg'];
         }
-
-        // Generate api link based on inputs
-        function api(page) {
-            let tag = new URLSearchParams(window.location.search).get('tag');
-            if (tag) {
-                $('nav').append(`|&nbsp<strong>(${tag})</strong>`);
-                tag = tag.replace(' ', '%20');
-                return `${baseUrl}api/v6/${version}/index/tag/${page}/pc?tag=${tag}`
-            }
-
-            $('nav a[href="index.html"]').addClass("active");
-            return `${baseUrl}api/v6/${version}/index/main/${page}/pc`
-        }
-
-        // Video click event: redirect to video permanent link
-        $(document).on('click', '.video', function () {
-            window.location.href = 'video.html?' + $.param({
-                id: $(this).attr('id')
-            });
-        });
 
         // Page click event
         $(document).on('click', '#pages a', function (e) {
@@ -164,29 +113,34 @@
             $('#loading').show();
 
             page = parseInt($(this).html()) - 1;
-            fetchVideos(version, page);
+            fetchVideos();
         });
 
         // Show other thumbs
-        let thumbTimers = {};
         $(document).on('mouseover touchstart touchmove', '.box img', function () {
             let self = $(this);
-            let id = self.attr('id');
-            let xid = 'x' + id;
+            let id = 'x' + self.attr('id');
 
-            $.each(thumbTimers, function (i, t) {
-                if (t !== thumbTimers[xid]) {
+            $.each(thumbs[id], function (i, location) {
+                let img = new Image();
+                img.onerror = function () {
+                    thumbs[id].splice(i, 1);
+                };
+                img.src = location;
+            });
+
+            $.each(thumbIntervals, function (i, t) {
+                if (i !== id) {
                     clearInterval(t);
                 }
             });
 
-            if (thumbTimers[xid] === undefined) {
+            if (thumbIntervals[id] === undefined) {
                 let i = 0;
-                thumbTimers[xid] = setInterval(function () {
-                    i = (i + 1) % thumbs[xid].length;
-                    console.log(i);
-                    self.attr('src', thumbs[xid][i]);
-                }, 500);
+                thumbIntervals[id] = setInterval(function () {
+                    i = (i + 1) % thumbs[id].length;
+                    self.attr('src', thumbs[id][i]);
+                }, 250);
             }
         });
     });
