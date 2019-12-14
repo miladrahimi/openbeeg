@@ -65,6 +65,7 @@
         let version = 0;
         let bundleVersion = 0;
         let page = 0;
+        let thumbs = [];
 
         // Load the homepage
         $.ajax({
@@ -99,9 +100,8 @@
                     container.appendTo('main');
 
                     setTimeout(function () {
-                        let thumbs = thumbnails(video['thumbs']);
-                        img.attr('src', thumbs[0]);
-                        img.attr('data-thumbs', JSON.stringify(thumbs));
+                        thumbs['x' + video['svid']] = thumbnails(video['thumbs']);
+                        img.attr('src', thumbs['x' + video['svid']][0]);
                     });
                 });
 
@@ -168,18 +168,26 @@
         });
 
         // Show other thumbs
-        $(document).on('touchstart touchmove mouseover', '.box img', function () {
+        let thumbTimers = {};
+        $(document).on('mouseover touchstart touchmove', '.box img', function () {
             let self = $(this);
-            let thumbs = JSON.parse(self.attr('data-thumbs'));
-            let i = 0;
-            let t = setInterval(function () {
-                i = (i + 1) % thumbs.length;
-                self.attr('src', thumbs[i]);
-            }, 500);
-            self.attr('data-tt', t);
-        });
-        $(document).on('mouseout blur', '.box img', function () {
-            clearInterval($(this).attr('data-tt'));
+            let id = self.attr('id');
+            let xid = 'x' + id;
+
+            $.each(thumbTimers, function (i, t) {
+                if (t !== thumbTimers[xid]) {
+                    clearInterval(t);
+                }
+            });
+
+            if (thumbTimers[xid] === undefined) {
+                let i = 0;
+                thumbTimers[xid] = setInterval(function () {
+                    i = (i + 1) % thumbs[xid].length;
+                    console.log(i);
+                    self.attr('src', thumbs[xid][i]);
+                }, 500);
+            }
         });
     });
 </script>
