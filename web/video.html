@@ -131,7 +131,7 @@
                     h_referer: baseUrl,
                 }
             }).done(function (response) {
-                let link = $('<a href="#" target="_blank" rel="nofollow"></a>');
+                let link = $('<a href="#" target="_blank" rel="noreferrer"></a>');
                 link.attr('href', response['location']);
                 link.html(flag(country) + ' ' + quality);
                 link.appendTo('#links');
