@@ -137,7 +137,7 @@
                 link.appendTo('#links');
 
                 let option = $('<option></option>');
-                option.attr('value', response['location']);
+                option.attr('value', proxify(response['location']));
                 option.html(country + ' ' + quality);
                 option.appendTo('#videos');
 
