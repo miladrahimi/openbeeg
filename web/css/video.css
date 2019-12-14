@@ -1,13 +1,13 @@
-#links {
+.links {
     padding: 0 5%;
 }
 
-#links a {
+.links a, .links span {
     display: inline-block;
     margin: 15px;
 }
 
-#links img {
+.links img {
     width: 16px;
     height: 16px;
     position: relative;

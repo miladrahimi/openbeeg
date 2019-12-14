@@ -4,25 +4,25 @@ body {
 }
 
 a {
-    text-decoration: none;
     color: dodgerblue;
+    text-decoration: none;
+    transition: .3s ease all;
 }
 
-h1 a {
+a:hover {
+    color: black;
+}
+
+header a {
     margin: 15px;
     padding: 15px 20px;
     border: solid 1px dodgerblue;
     border-radius: 50%;
     display: inline-block;
     vertical-align: middle;
-    transition: .3s ease all;
+    font-size: xx-large;
 }
 
-h1 a:hover, h1 a:focus {
+header a:hover, header a:focus {
     background: dodgerblue;
-}
-
-#loading {
-    margin: 15px 0;
-    font-weight: bold;
 }

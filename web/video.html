@@ -6,25 +6,25 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="referrer" content="no-referrer">
     <title>OpenBeeg!</title>
-    <link rel="stylesheet" href="css/general.css?md5=e65d2127be239653807391c7cf0cc1c8">
-    <link rel="stylesheet" href="css/video.css">
+    <link rel="stylesheet" href="css/general.css?md5=b2e8b245cf6914db5f4d818518804b23">
+    <link rel="stylesheet" href="css/video.css?md5=e549ae5c14d2bddc2152a12c6c52e6e3">
     <link rel="apple-touch-icon" sizes="160x160" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
-<h1><a href="/">&#128166;</a></h1>
+<header><a href="/">&#128166;</a></header>
 
-<h2>Loading title...</h2>
+<h3>Loading...</h3>
 
-<p id="loading">LOADING...</p>
-
-<section id="links"></section>
+<section id="links-us" class="links"></section>
+<section id="links-tr" class="links"></section>
+<section id="links-pk" class="links"></section>
 
 <section id="player"></section>
 
-<section><p>Copyfuck &copy; by M.R. Offered by E.H.T.</p></section>
+<p>Copyfuck &copy; by M.R. Offered by E.H.T.</p>
 
 <!-- Scripts -->
 <script src="vendor/jquery-3.3.1.min.js"></script>
@@ -32,11 +32,8 @@
 <script>
     $(document).ready(function () {
         let videoId = new URLSearchParams(window.location.search).get('id');
+        let mainVersion = 0;
         let bundleVersion = 0;
-
-        if (!videoId) {
-            window.location.href = 'index.html';
-        }
 
         // Load the video page
         $.ajax({
@@ -44,46 +41,39 @@
             type: 'GET',
             data: {url: baseUrl + videoId}
         }).done(function (response) {
-            let version = response.match(/beeg_version = ([\d]+);/)[1];
-            fetchVideo(version);
+            mainVersion = response.match(/beeg_version = ([\d]+);/)[1];
+            fetchDetails();
         }).fail(function () {
             alert('Cannot load the video page.');
         });
 
-        // Fetch the video information
-        function fetchVideo(version) {
+        function fetchDetails() {
             $.ajax({
                 url: proxyUrl,
                 type: 'GET',
-                data: {url: `https://beeg.com/api/v6/${version}/video/${videoId}?v=2`}
+                data: {
+                    url: `https://beeg.com/api/v6/${mainVersion}/video/${videoId}?v=2`,
+                }
             }).done(function (response) {
                 bundleVersion = response['bundle_version'];
-                $('h2').html(response['title'] ? response['title'] : response['ps_name']);
+
+                $('h3').html(response['title'] ? response['title'] : response['ps_name']);
 
                 let range = '';
                 if (response['start'] && response['end']) {
                     range = '_' + response['start'] + '_' + response['end'];
                 }
 
-                $('#player').append('<select id="videos" title="Video"></select>');
-
-                let qualities = ['240p', '480p', '720p', '1080p', '2160p'];
-                $.each(qualities, function (i, quality) {
+                $.each(['240p', '480p', '720p', '1080p', '2160p'], function (i, quality) {
                     if (response[quality]) {
-                        fetchLinks(response[quality], quality, range, 'TR');
                         fetchLinks(response[quality], quality, range, 'US');
+                        fetchLinks(response[quality], quality, range, 'TR');
                         fetchLinks(response[quality], quality, range, 'PK');
                     }
                 });
             }).fail(function () {
-                alert('Cannot load the video information.');
+                alert('Cannot load the video details.');
             });
-        }
-
-        // Generate video link
-        function generateLink(link, range, country) {
-            let markers = `data=pc_${country}__${bundleVersion}_`;
-            return 'https:' + link.replace('{DATA_MARKERS}', markers) + range;
         }
 
         // Fetch final links for the video
@@ -92,56 +82,41 @@
                 url: proxyUrl,
                 type: 'GET',
                 data: {
-                    url: generateLink(link, range, country),
+                    url: 'https:' + link.replace('{DATA_MARKERS}', `data=pc_${country}__${bundleVersion}_`) + range,
                     redirection: 'stop',
                     h_referer: baseUrl,
                 }
             }).done(function (response) {
-                let link = $('<a href="#" target="_blank" rel="noreferrer"></a>');
+                let link = $('<a target="_blank" rel="noreferrer"></a>');
                 link.attr('href', response['location']);
-                link.html(flag(country) + ' ' + quality);
-                link.appendTo('#links');
+                link.html(createFlag(country) + ' ' + quality);
+                link.appendTo('#links-' + country.toLowerCase());
 
-                let option = $('<option></option>');
-                option.attr('value', response['location']);
-                option.html(country + ' ' + quality);
-                option.appendTo('#videos');
-
-                play(undefined);
+                if ($('video').length === 0) {
+                    createPlayer(proxify(response['location']));
+                }
             }).fail(function () {
-                let link = $('<p></p>');
-                link.html(flag(country) + ' ' + quality);
+                let link = $('<span></span>');
+                link.html(createFlag(country) + ' ' + quality);
                 link.appendTo('#links');
-            }).always(function () {
-                $('#loading').hide();
             });
         }
 
-        function flag(country) {
+        function createFlag(country) {
             let url = 'https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.3.0/flags/1x1/country.svg';
             let flag = url.replace('country', country.toLowerCase());
 
             return `<img src="${flag}" alt="${country}">`;
         }
 
-        function play(link) {
-            if (link === undefined) {
-                link = $('#videos').val();
-            }
-
-            if ($('video').length === 0) {
-                let video = $('<video></video>');
-                video.attr('src', link);
-                video.attr('preload', 'metadata');
-                video.attr('controls', true);
-                video.attr('playsinline', true);
-                video.appendTo('#player');
-            }
+        function createPlayer(link) {
+            let video = $('<video></video>');
+            video.attr('src', link);
+            video.attr('preload', 'metadata');
+            video.attr('controls', true);
+            video.attr('playsinline', true);
+            video.appendTo('#player');
         }
-
-        $(document).on('change', '#videos', function () {
-            $('video').attr('src', $(this).val());
-        });
     });
 </script>
 </body>

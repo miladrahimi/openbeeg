@@ -6,19 +6,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="referrer" content="no-referrer">
     <title>OpenBeeg!</title>
-    <link rel="stylesheet" href="css/general.css?md5=e65d2127be239653807391c7cf0cc1c8">
-    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/general.css?md5=b2e8b245cf6914db5f4d818518804b23">
+    <link rel="stylesheet" href="css/home.css?md5=2c055edf7e030282a8194d1422c6e2ad">
     <link rel="apple-touch-icon" sizes="160x160" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
-<h1><a href="index.html">&#128166;</a></h1>
+<header><a href="index.html">&#128166;</a></header>
 
 <main></main>
-<section id="pages"></section>
-<p id="loading">LOADING...</p>
+
+<nav id="pages"></nav>
 
 <!-- Scripts -->
 <script src="vendor/jquery-3.3.1.min.js"></script>
@@ -54,7 +54,7 @@
                 bundleVersion = response['bundle_version'];
 
                 $.each(response['videos'], function (i, video) {
-                    let container = $('<a class="box" href="#"></a>');
+                    let container = $('<a class="box"></a>');
                     container.attr('href', 'video.html?id=' + video['svid']);
 
                     let img = $('<img src="" alt="">');
@@ -80,8 +80,6 @@
                     link.html(i + 1);
                     link.appendTo('#pages')
                 }
-
-                $('#loading').hide();
             }).fail(function () {
                 alert('Cannot fetch videos.');
             });
@@ -109,10 +107,10 @@
             $('#pages a').removeClass('current');
             $(this).addClass('current');
 
-            $('main').html('');
-            $('#loading').show();
-
             page = parseInt($(this).html()) - 1;
+
+            $('main').html('');
+
             fetchVideos();
         });
 
