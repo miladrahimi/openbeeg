@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="referrer" content="no-referrer">
     <title>OpenBeeg > Video</title>
     <link rel="stylesheet" href="css/general.css">
     <link rel="apple-touch-icon" sizes="160x160" href="img/logo.png">
@@ -130,7 +131,7 @@
                     h_referer: baseUrl,
                 }
             }).done(function (response) {
-                let link = $('<a href="#" target="_blank" rel="noreferrer"></a>');
+                let link = $('<a href="#" target="_blank" rel="nofollow"></a>');
                 link.attr('href', response['location']);
                 link.html(flag(country) + ' ' + quality);
                 link.appendTo('#links');
