@@ -168,7 +168,7 @@
         });
 
         // Show other thumbs
-        $(document).on('mouseover', '.box img', function () {
+        $(document).on('touchstart touchmove mouseover', '.box img', function () {
             let self = $(this);
             let thumbs = JSON.parse(self.attr('data-thumbs'));
             let i = 0;
@@ -178,7 +178,7 @@
             }, 500);
             self.attr('data-tt', t);
         });
-        $(document).on('mouseout', '.box img', function () {
+        $(document).on('mouseout blur', '.box img', function () {
             clearInterval($(this).attr('data-tt'));
         });
     });
