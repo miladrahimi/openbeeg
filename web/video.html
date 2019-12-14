@@ -130,7 +130,7 @@
                     h_referer: baseUrl,
                 }
             }).done(function (response) {
-                let link = $('<a href="#" target="_blank"></a>');
+                let link = $('<a href="#" target="_blank" rel="noreferrer"></a>');
                 link.attr('href', response['location']);
                 link.html(flag(country) + ' ' + quality);
                 link.appendTo('#links');
@@ -174,11 +174,6 @@
 
         $(document).on('change', '#videos', function () {
             $('video').attr('src', $(this).val());
-        });
-
-        $(document).on('click', '#links a', function (e) {
-            e.preventDefault();
-            alert('Copy the link address and paste it in a new tab or window.')
         });
     });
 </script>
