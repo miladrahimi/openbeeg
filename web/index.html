@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="referrer" content="no-referrer">
     <title>OpenBeeg!</title>
-    <link rel="stylesheet" href="css/general.css">
+    <link rel="stylesheet" href="css/general.css?v=2">
     <link rel="apple-touch-icon" sizes="160x160" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
     <style>
@@ -14,7 +15,12 @@
             line-height: 0;
         }
 
-        img {
+        .box {
+            display: inline-block;
+            position: relative;
+        }
+
+        .box img {
             width: 100%;
             max-width: 300px;
             height: auto;
@@ -82,16 +88,20 @@
                 bundleVersion = response['bundle_version'];
 
                 $.each(response['videos'], function (i, video) {
+                    let container = $('<div class="box"></div>');
                     let img = $('<img src="" alt="">');
                     img.attr('id', video['svid']);
                     img.attr('alt', video['title']);
                     img.attr('title', video['title']);
                     img.attr('src', 'img/placeholder.jpg');
                     img.attr('class', 'video');
-                    img.appendTo('main');
+                    img.appendTo(container);
+                    container.appendTo('main');
 
                     setTimeout(function () {
-                        img.attr('src', thumbnail(video['thumbs']));
+                        let thumbs = thumbnails(video['thumbs']);
+                        img.attr('src', thumbs[0]);
+                        img.attr('data-thumbs', JSON.stringify(thumbs));
                     });
                 });
 
@@ -110,12 +120,17 @@
         }
 
         // Generate thumbnail link through the proxy
-        function thumbnail(thumbnails) {
-            if (thumbnails && thumbnails[0]) {
-                return proxify('https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumbnails[0].image);
+        function thumbnails(thumbnails) {
+            if (thumbnails) {
+                let result = [];
+                thumbnails.forEach(function (thumbnail) {
+                    result.push('https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumbnail.image)
+                });
+
+                return result;
             }
 
-            return 'img/placeholder.jpg';
+            return ['img/placeholder.jpg'];
         }
 
         // Generate api link based on inputs
@@ -150,6 +165,21 @@
 
             page = parseInt($(this).html()) - 1;
             fetchVideos(version, page);
+        });
+
+        // Show other thumbs
+        $(document).on('mouseover', '.box img', function () {
+            let self = $(this);
+            let thumbs = JSON.parse(self.attr('data-thumbs'));
+            let i = 0;
+            let t = setInterval(function () {
+                i = (i + 1) % thumbs.length;
+                self.attr('src', thumbs[i]);
+            }, 500);
+            self.attr('data-tt', t);
+        });
+        $(document).on('mouseout', '.box img', function () {
+            clearInterval($(this).attr('data-tt'));
         });
     });
 </script>
