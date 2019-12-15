@@ -6,6 +6,7 @@ main {
 .box {
     display: inline-block;
     position: relative;
+    user-select: none;
 }
 
 .box img {
