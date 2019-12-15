@@ -122,10 +122,12 @@
             $.each(thumbs[id], function (i, location) {
                 let img = new Image();
                 img.onerror = function () {
+                    console.warn(location);
                     thumbs[id] = 'img/placeholder.jpg';
                     setTimeout(function () {
                         let img2 = new Image();
                         img2.onerror = function () {
+                            console.error(location);
                             thumbs[id].splice(i, 1);
                         };
                         img2.src = location;
