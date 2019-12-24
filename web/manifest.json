@@ -1,7 +1,7 @@
 {
   "name": "OpenBeeg!",
   "short_name": "OpenBeeg!",
-  "start_url": "index.html?utm_source=homescreen",
+  "start_url": "index.html",
   "scope": "./",
   "icons": [
     {

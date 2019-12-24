@@ -6,10 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="referrer" content="no-referrer">
     <title>OpenBeeg!</title>
-    <link rel="stylesheet" href="css/general.css?md5=b2e8b245cf6914db5f4d818518804b23">
-    <link rel="stylesheet" href="css/video.css?md5=f5aea62eef6cf532a6384021bf92f584">
-    <link rel="apple-touch-icon" sizes="160x160" href="img/logo.png">
-    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="../assets/css/general.css?md5=b2e8b245cf6914db5f4d818518804b23">
+    <link rel="stylesheet" href="../assets/css/video.css?md5=f5aea62eef6cf532a6384021bf92f584">
+    <link rel="apple-touch-icon" sizes="160x160" href="../assets/img/logo.png">
+    <link rel="manifest" href="../manifest.json">
 </head>
 
 <body>
@@ -27,8 +27,8 @@
 <p>Copyfuck &copy; by M.R. Offered by E.H.T.</p>
 
 <!-- Scripts -->
-<script src="vendor/jquery-3.3.1.min.js"></script>
-<script src="js/general.js"></script>
+<script src="../assets/vendor/jquery-3.3.1.min.js"></script>
+<script src="../assets/js/general.js"></script>
 <script>
     $(document).ready(function () {
         let videoId = new URLSearchParams(window.location.search).get('id');
@@ -40,10 +40,10 @@
             url: proxyUrl,
             type: 'GET',
             data: {url: baseUrl + videoId}
-        }).done(function (response) {
+        }).done(response => {
             mainVersion = response.match(/beeg_version = ([\d]+);/)[1];
             fetchDetails();
-        }).fail(function () {
+        }).fail(() => {
             alert('Cannot load the video page.');
         });
 
@@ -54,7 +54,7 @@
                 data: {
                     url: `https://beeg.com/api/v6/${mainVersion}/video/${videoId}?v=2`,
                 }
-            }).done(function (response) {
+            }).done(response => {
                 bundleVersion = response['bundle_version'];
 
                 $('h3').html(response['title'] ? response['title'] : response['ps_name']);
@@ -71,7 +71,7 @@
                         fetchLinks(response[quality], quality, range, 'PK');
                     }
                 });
-            }).fail(function () {
+            }).fail(() => {
                 alert('Cannot load the video details.');
             });
         }
@@ -86,7 +86,7 @@
                     redirection: 'stop',
                     h_referer: baseUrl,
                 }
-            }).done(function (response) {
+            }).done(response => {
                 let link = $('<a target="_blank" rel="noreferrer"></a>');
                 link.attr('href', response['location']);
                 link.html(createFlag(country) + ' ' + quality);
@@ -95,7 +95,7 @@
                 if ($('video').length === 0) {
                     createPlayer(proxify(response['location']));
                 }
-            }).fail(function () {
+            }).fail(() => {
                 let link = $('<span></span>');
                 link.html(createFlag(country) + ' ' + quality);
                 link.appendTo('#links');
