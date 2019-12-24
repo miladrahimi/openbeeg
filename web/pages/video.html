@@ -14,7 +14,7 @@
 
 <body>
 
-<header><a href="/">&#128166;</a></header>
+<header><a href="index.html">&#128166;</a></header>
 
 <h3>Loading...</h3>
 
@@ -92,9 +92,7 @@
                 link.html(createFlag(country) + ' ' + quality);
                 link.appendTo('#links-' + country.toLowerCase());
 
-                if ($('video').length === 0) {
-                    createPlayer(proxify(response['location']));
-                }
+                $('video').length === 0 && createPlayer(proxify(response['location']));
             }).fail(() => {
                 let link = $('<span></span>');
                 link.html(createFlag(country) + ' ' + quality);
