@@ -10,7 +10,7 @@
       "type": "image/x-icon"
     },
     {
-      "src": "./img/logo.png",
+      "src": "./assets/img/logo.png",
       "sizes": "160x160",
       "type": "image/png"
     }
