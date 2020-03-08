@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="referrer" content="no-referrer">
+    <title>OpenBeeg!</title>
+    <link rel="stylesheet" href="assets/css/general.css?md5=b2e8b245cf6914db5f4d818518804b23">
+    <link rel="stylesheet" href="assets/css/video.css?md5=f5aea62eef6cf532a6384021bf92f584">
+    <link rel="icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="160x160" href="assets/img/logo.png">
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+<header><a href="index.html">&#128166;</a></header>
+
+<h3>Loading...</h3>
+
+<section id="links-us" class="links"></section>
+<section id="links-tr" class="links"></section>
+<section id="links-pk" class="links"></section>
+
+<section id="player"></section>
+
+<p>Copyfuck &copy; M.R. Offered by E.H.T.</p>
+
+<!-- Scripts -->
+<script src="assets/js/general.js"></script>
+<script>
+    let videoId = new URLSearchParams(window.location.search).get('id');
+    let mainVersion = parseInt(window.cache.get('mainVersion'));
+    let bundleVersion = 0;
+    let player = false;
+
+    // Load the main version and start the app
+    mainVersion ? fetchDetails() : window.load(baseUrl, response => {
+        mainVersion = response.match(/beeg_version = ([\d]+);/)[1];
+        fetchDetails();
+        window.cache.set('mainVersion', mainVersion, window.duration.month);
+    });
+
+    function fetchDetails() {
+        let url = `https://beeg.com/api/v6/${mainVersion}/video/${videoId}?v=2`;
+
+        window.load(url, response => {
+            let r = JSON.parse(response);
+
+            bundleVersion = r['bundle_version'];
+
+            document.getElementsByTagName('h3')[0].innerHTML = r['title'] ? r['title'] : r['ps_name'];
+
+            let range = '';
+            if (r['start'] && r['end']) {
+                range = '_' + r['start'] + '_' + r['end'];
+            }
+
+            ['240p', '480p', '720p', '1080p', '2160p'].forEach(quality => {
+                if (r[quality]) {
+                    fetchLinks(r[quality], quality, range, 'US');
+                    fetchLinks(r[quality], quality, range, 'TR');
+                    fetchLinks(r[quality], quality, range, 'PK');
+                }
+            });
+        });
+    }
+
+    // Fetch final links for the video
+    function fetchLinks(link, quality, range, country) {
+        let url = window.proxify(
+            'https:' + link.replace('{DATA_MARKERS}', `data=pc_${country}__${bundleVersion}_`) + range
+        );
+
+        let linkBox = document.getElementById('links-' + country.toLowerCase());
+
+        let a = document.createElement('a');
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noreferrer');
+        a.setAttribute('href', url);
+        a.innerHTML = createFlag(country) + ' ' + quality;
+
+        linkBox.appendChild(a);
+
+        player || createPlayer(proxify(url));
+    }
+
+    function createFlag(country) {
+        let url = 'https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.3.0/flags/1x1/country.svg';
+        let flag = url.replace('country', country.toLowerCase());
+
+        return `<img src="${flag}" alt="${country}">`;
+    }
+
+    function createPlayer(link) {
+        player = true;
+
+        let url = {
+            url: link,
+            redirection: 'stop',
+        };
+
+        window.load(url, response => {
+            let r = JSON.parse(response);
+
+            let video = document.createElement('video');
+            video.setAttribute('src', r['location']);
+            video.setAttribute('preload', 'metadata');
+            video.setAttribute('controls', 'true');
+            video.setAttribute('playsinline', 'true');
+
+            document.getElementById('player').appendChild(video);
+        });
+    }
+</script>
+</body>
+</html>

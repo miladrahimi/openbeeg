@@ -1,13 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; url=./pages/index.html"/>
-    <title>Redirecting to ./pages/index.html</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="referrer" content="no-referrer">
+    <title>OpenBeeg!</title>
+    <link rel="stylesheet" href="assets/css/general.css?md5=b2e8b245cf6914db5f4d818518804b23">
+    <link rel="stylesheet" href="assets/css/index.css?md5=91bfcb5eca995df7f693091374734d18">
+    <link rel="icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="160x160" href="assets/img/logo.png">
+    <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
-<p>
-    <a href="./pages/index.html">./pages/index.html</a>
-</p>
+
+<header><a href="index.html">&#128166;</a></header>
+
+<main></main>
+
+<nav id="pages"></nav>
+
+<!-- Scripts -->
+<script src="assets/js/general.js?md5=0304ac7a40331e49141a704899b8abe9"></script>
+<script>
+    let mainVersion = parseInt(window.cache.get('mainVersion'));
+    let bundleVersion = 0;
+    let page = 0;
+    let thumbs = {};
+    let thumbIntervals = {};
+    let thumbHolder = '../assets/img/placeholder.jpg';
+
+    // Load the main version and start the app
+    mainVersion ? fetchVideos() : window.load(baseUrl, response => {
+        mainVersion = response.match(/beeg_version = ([\d]+);/)[1];
+        fetchVideos();
+        window.cache.set('mainVersion', mainVersion, window.duration.month);
+    });
+
+    function fetchVideos() {
+        let url = `${window.baseUrl}api/v6/${mainVersion}/index/main/${page}/pc`;
+
+        window.loadWithCache(url, window.duration.hour, response => {
+            let r = JSON.parse(response);
+
+            bundleVersion = r['bundle_version'];
+
+            r['videos'].forEach(video => {
+                let img = document.createElement('img');
+                img.setAttribute('id', video['svid']);
+                img.setAttribute('src', thumbHolder);
+                img.setAttribute('alt', video['title'] ? video['title'] : video['ps_name']);
+                img.setAttribute('title', img.getAttribute('alt'));
+
+                let box = document.createElement('a');
+                box.setAttribute('class', 'box');
+                box.setAttribute('href', 'video.html?id=' + video['svid']);
+                box.appendChild(img);
+
+                document.getElementsByTagName('main')[0].appendChild(box);
+
+                setTimeout(() => {
+                    thumbs[video['svid']] = extractThumbnails(video['thumbs']);
+                    img.setAttribute('src', thumbs[video['svid']][0]);
+                });
+            });
+
+            let pages = document.getElementById('pages');
+            pages.innerHTML = '';
+
+            for (let i = 0; i < r['pages']; i++) {
+                let link = document.createElement('a');
+                link.setAttribute('href', '#');
+                link.setAttribute('class', (i === page) ? 'current' : '');
+                link.innerHTML = (i + 1).toString();
+
+                pages.appendChild(link);
+            }
+        });
+    }
+
+    // Extract thumbnails from the video (and proxify it)
+    function extractThumbnails(thumbs) {
+        if (thumbs) {
+            let result = [];
+
+            thumbs.forEach(thumb => result.push(
+                proxify('https://img.beeg.com/264x198/4x3/138x0x1440x1081/' + thumb.image)
+            ));
+
+            return result;
+        }
+
+        return [thumbHolder];
+    }
+
+    // Page click event
+    document.addEventListener('click', e => {
+        if (e.target && e.target.tagName === 'A' && e.target.parentNode.id === 'pages') {
+            e.preventDefault();
+
+            document.querySelectorAll('#pages a').forEach(element => {
+                element.classList.remove('current');
+            });
+
+            e.target.classList.add('current');
+
+            page = parseInt(e.target.innerHTML) - 1;
+
+            document.getElementsByTagName('main')[0].innerHTML = '';
+
+            fetchVideos();
+        }
+    });
+
+    // Video Preview
+    let preview = function (e) {
+        if (e.target && e.target.tagName === 'IMG' && e.target.parentNode.classList.contains('box')) {
+            let self = e.target;
+            let id = self.id;
+
+            for (const i in thumbs[id]) {
+                if (thumbs[id].hasOwnProperty(i)) {
+                    let img = new Image();
+                    img.onerror = () => thumbs[id].splice(i, 1);
+                    img.src = thumbs[id][i];
+                }
+            }
+
+            for (const i in thumbIntervals) {
+                i !== id && clearInterval(thumbIntervals[i]);
+            }
+
+            if (thumbIntervals[id] === undefined) {
+                let i = 0;
+                thumbIntervals[id] = setInterval(() => {
+                    i = (i + 1) % thumbs[id].length;
+                    self.setAttribute('src', thumbs[id][i]);
+                }, 250);
+            }
+        }
+    };
+
+    // Show preview on mouse over / touch start
+    document.addEventListener('mouseover', preview);
+    document.addEventListener('touchstart', preview);
+    document.addEventListener('touchmove', preview);
+</script>
 </body>
 </html>
