@@ -96,8 +96,13 @@
     function createPlayer(link) {
         player = true;
 
+        let src =  window.proxify({
+            url: link,
+            redirection: 'follow',
+        });
+
         let video = document.createElement('video');
-        video.setAttribute('src', link);
+        video.setAttribute('src', src);
         video.setAttribute('preload', 'metadata');
         video.setAttribute('controls', 'true');
         video.setAttribute('playsinline', 'true');
