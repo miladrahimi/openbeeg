@@ -96,22 +96,13 @@
     function createPlayer(link) {
         player = true;
 
-        let url = {
-            url: link,
-            redirection: 'stop',
-        };
+        let video = document.createElement('video');
+        video.setAttribute('src', link);
+        video.setAttribute('preload', 'metadata');
+        video.setAttribute('controls', 'true');
+        video.setAttribute('playsinline', 'true');
 
-        window.load(url, response => {
-            let r = JSON.parse(response);
-
-            let video = document.createElement('video');
-            video.setAttribute('src', r['location']);
-            video.setAttribute('preload', 'metadata');
-            video.setAttribute('controls', 'true');
-            video.setAttribute('playsinline', 'true');
-
-            document.getElementById('player').appendChild(video);
-        });
+        document.getElementById('player').appendChild(video);
     }
 </script>
 </body>
