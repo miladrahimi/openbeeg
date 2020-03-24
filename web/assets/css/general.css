@@ -26,3 +26,13 @@ header a {
 header a:hover, header a:focus {
     background: dodgerblue;
 }
+
+.alert {
+    font-family: Arial, Tahoma, Georgia, serif;
+    direction: rtl;
+    padding: 10px;
+    background: gold;
+    border: solid 1px #927b00;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
