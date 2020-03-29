@@ -50,7 +50,14 @@
 
             bundleVersion = r['bundle_version'];
 
-            document.getElementsByTagName('h3')[0].innerHTML = r['title'] ? r['title'] : r['ps_name'];
+            let title = 'No name!';
+            if (r['title']) {
+                title = r['title'];
+            } else if (r['ps_name']) {
+                title = r['ps_name'];
+            }
+
+            document.getElementsByTagName('h3')[0].innerHTML = title;
 
             let range = '';
             if (r['start'] && r['end']) {
