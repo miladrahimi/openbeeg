@@ -103,18 +103,22 @@
     function createPlayer(link) {
         player = true;
 
-        let src =  window.proxify({
+        window.load(window.proxify({
             url: link,
-            redirection: '',
+            redirection: 'stop',
+        }), response => {
+            let r = JSON.parse(response);
+
+            let url = window.proxify(r['location']);
+
+            let video = document.createElement('video');
+            video.setAttribute('src', url);
+            video.setAttribute('preload', 'metadata');
+            video.setAttribute('controls', 'true');
+            video.setAttribute('playsinline', 'true');
+
+            document.getElementById('player').appendChild(video);
         });
-
-        let video = document.createElement('video');
-        video.setAttribute('src', src);
-        video.setAttribute('preload', 'metadata');
-        video.setAttribute('controls', 'true');
-        video.setAttribute('playsinline', 'true');
-
-        document.getElementById('player').appendChild(video);
     }
 </script>
 </body>
