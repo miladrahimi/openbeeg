@@ -68,11 +68,11 @@
                 range = '_' + r['start'] + '_' + r['end'];
             }
 
-            ['240p', '480p', '720p', '1080p', '2160p'].forEach(quality => {
-                if (r[quality]) {
-                    fetchLinks(r[quality], quality, range, 'US');
-                    fetchLinks(r[quality], quality, range, 'TR');
-                    fetchLinks(r[quality], quality, range, 'PK');
+            ['240', '480', '720', '1080', '2160'].forEach(quality => {
+                if (r[quality + 'p']) {
+                    fetchLinks(r[quality + 'p'], quality, range, 'US');
+                    fetchLinks(r[quality + 'p'], quality, range, 'TR');
+                    fetchLinks(r[quality + 'p'], quality, range, 'PK');
                 }
             });
         });
