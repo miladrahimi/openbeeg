@@ -1,6 +1,18 @@
-.links a, .links span {
+.links .link {
     display: inline-block;
-    margin: 5px;
+    padding: 5px;
+    background: #e6e6e6;
+    cursor: pointer;
+    transition: .3s ease all;
+    border: solid 1px #acacac;
+}
+
+.links .link:hover {
+    background: #acacac;
+}
+
+.links .link.active {
+    background: dodgerblue;
 }
 
 .links img {

@@ -7,7 +7,7 @@
     <meta name="referrer" content="no-referrer">
     <title>OpenBeeg!</title>
     <link rel="stylesheet" href="../assets/css/general.css?md5=ca305efb702300e8ba269e8b360c942f">
-    <link rel="stylesheet" href="../assets/css/video.css?md5=f5aea62eef6cf532a6384021bf92f584">
+    <link rel="stylesheet" href="../assets/css/video.css?md5=d73c42160ef5ba7f47f8e6701bfc385b">
     <link rel="icon" href="../favicon.ico">
     <link rel="apple-touch-icon" sizes="160x160" href="../assets/img/logo.png">
     <link rel="manifest" href="../manifest.json">
@@ -80,17 +80,17 @@
             'https:' + link.replace('{DATA_MARKERS}', `data=pc_${country}__${bundleVersion}_`) + range
         );
 
-        let linkBox = document.getElementById('links-' + country.toLowerCase());
+        let span = document.createElement('span');
+        span.setAttribute('data-url', url);
+        span.setAttribute('class', 'link');
+        span.innerHTML = createFlag(country) + ' ' + quality;
 
-        let a = document.createElement('a');
-        a.setAttribute('target', '_blank');
-        a.setAttribute('rel', 'noreferrer');
-        a.setAttribute('href', url);
-        a.innerHTML = createFlag(country) + ' ' + quality;
+        document.getElementById('links-' + country.toLowerCase()).appendChild(span);
 
-        linkBox.appendChild(a);
-
-        player || createPlayer(proxify(url));
+        if (!player) {
+            span.classList.add('active');
+            setupPlayer(url);
+        }
     }
 
     function createFlag(country) {
@@ -100,26 +100,42 @@
         return `<img src="${flag}" alt="${country}">`;
     }
 
-    function createPlayer(link) {
-        player = true;
+    function setupPlayer(link) {
+        let video;
+
+        if(player) {
+            video = document.getElementsByTagName('video')[0];
+        } else {
+            video = document.createElement('video');
+            video.setAttribute('preload', 'metadata');
+            video.setAttribute('controls', 'true');
+            video.setAttribute('playsinline', 'true');
+            video.setAttribute('autoplay', 'true');
+
+            document.getElementById('player').appendChild(video);
+
+            player = true;
+        }
 
         window.load(window.proxify({
             url: link,
             redirection: 'stop',
         }), response => {
-            let r = JSON.parse(response);
-
-            let url = window.proxify(r['location']);
-
-            let video = document.createElement('video');
-            video.setAttribute('src', url);
-            video.setAttribute('preload', 'metadata');
-            video.setAttribute('controls', 'true');
-            video.setAttribute('playsinline', 'true');
-
-            document.getElementById('player').appendChild(video);
+            video.setAttribute('src', window.proxify(JSON.parse(response)['location']));
         });
     }
+
+    document.addEventListener('click', e => {
+        if(e.target && e.target.classList[0] === 'link') {
+            setupPlayer(e.target.getAttribute('data-url'));
+
+            document.querySelectorAll('.link').forEach(e => {
+                e.classList.remove('active');
+            });
+
+            e.target.classList.add('active');
+        }
+    })
 </script>
 </body>
 </html>

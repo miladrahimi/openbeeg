@@ -107,8 +107,8 @@
         if (e.target && e.target.tagName === 'A' && e.target.parentNode.id === 'pages') {
             e.preventDefault();
 
-            document.querySelectorAll('#pages a').forEach(element => {
-                element.classList.remove('current');
+            document.querySelectorAll('#pages a').forEach(e => {
+                e.classList.remove('current');
             });
 
             e.target.classList.add('current');
