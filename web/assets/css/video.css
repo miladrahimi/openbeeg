@@ -35,3 +35,16 @@
     display: block;
     margin: 15px auto;
 }
+
+#download {
+    background: dodgerblue;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 5px;
+    transition: .3s ease all;
+    display: none;
+}
+
+#download:hover {
+    background: #197ad8;
+}

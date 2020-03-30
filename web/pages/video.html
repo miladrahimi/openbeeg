@@ -7,7 +7,7 @@
     <meta name="referrer" content="no-referrer">
     <title>OpenBeeg!</title>
     <link rel="stylesheet" href="../assets/css/general.css?md5=ca305efb702300e8ba269e8b360c942f">
-    <link rel="stylesheet" href="../assets/css/video.css?md5=d73c42160ef5ba7f47f8e6701bfc385b">
+    <link rel="stylesheet" href="../assets/css/video.css?md5=a39a9c7ce2dfc7e96fefc76cee9aea5f">
     <link rel="icon" href="../favicon.ico">
     <link rel="apple-touch-icon" sizes="160x160" href="../assets/img/logo.png">
     <link rel="manifest" href="../manifest.json">
@@ -24,6 +24,10 @@
 <section id="links-pk" class="links"></section>
 
 <section id="player"></section>
+
+<section>
+    <a href="#" id="download">Download</a>
+</section>
 
 <p>Copyfuck &copy; M.R. Offered by E.H.T.</p>
 
@@ -103,7 +107,7 @@
     function setupPlayer(link) {
         let video;
 
-        if(player) {
+        if (player) {
             video = document.getElementsByTagName('video')[0];
         } else {
             video = document.createElement('video');
@@ -113,6 +117,7 @@
             video.setAttribute('autoplay', 'true');
 
             document.getElementById('player').appendChild(video);
+            document.getElementById('download').style.display = 'inline-block';
 
             player = true;
         }
@@ -121,12 +126,17 @@
             url: link,
             redirection: 'stop',
         }), response => {
-            video.setAttribute('src', window.proxify(JSON.parse(response)['location']));
+            let url = window.proxify(JSON.parse(response)['location']);
+
+            video.setAttribute('src', url);
+            video.play();
+
+            document.getElementById('download').setAttribute('href', url);
         });
     }
 
     document.addEventListener('click', e => {
-        if(e.target && e.target.classList[0] === 'link') {
+        if (e.target && e.target.classList[0] === 'link') {
             setupPlayer(e.target.getAttribute('data-url'));
 
             document.querySelectorAll('.link').forEach(e => {
