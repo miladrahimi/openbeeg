@@ -80,9 +80,7 @@
 
     // Fetch final links for the video
     function fetchLinks(link, quality, range, country) {
-        let url = window.proxify(
-            'https:' + link.replace('{DATA_MARKERS}', `data=pc_${country}__${bundleVersion}_`) + range
-        );
+        let url = 'https:' + link.replace('{DATA_MARKERS}', `data=pc_${country}__${bundleVersion}_`) + range;
 
         let span = document.createElement('span');
         span.setAttribute('data-url', url);
