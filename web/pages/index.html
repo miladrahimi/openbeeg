@@ -40,13 +40,17 @@
 
     // Load the main version and start the app
     mainVersion ? fetchVideos() : window.load(baseUrl, response => {
-        mainVersion = response.match(/beeg_version = ([\d]+);/)[1];
-        fetchVideos();
+        let jsFile = response.match(/\/js\/app\.([^.]+)\.js/)[1];
+        window.load(baseUrl + '/js/app.' + jsFile + '.js', r => {
+            mainVersion = r.match(/service-worker\.js\?version="\)\.concat\("([0-9]+)"\)/)[1];
+            fetchVideos();
+        });
         window.cache.set('mainVersion', mainVersion, window.duration.month);
     });
 
     function fetchVideos() {
         let url = `${window.baseUrl}api/v6/${mainVersion}/index/main/${page}/pc`;
+        console.log(url);
 
         window.loadWithCache(url, window.duration.hour, response => {
             let r = JSON.parse(response);

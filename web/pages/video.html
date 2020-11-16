@@ -41,8 +41,11 @@
 
     // Load the main version and start the app
     mainVersion ? fetchDetails() : window.load(baseUrl, response => {
-        mainVersion = response.match(/beeg_version = ([\d]+);/)[1];
-        fetchDetails();
+        let jsFile = response.match(/\/js\/app\.([^.]+)\.js/)[1];
+        window.load(baseUrl + '/js/app.' + jsFile + '.js', r => {
+            mainVersion = r.match(/service-worker\.js\?version="\)\.concat\("([0-9]+)"\)/)[1];
+            fetchDetails();
+        });
         window.cache.set('mainVersion', mainVersion, window.duration.month);
     });
 
